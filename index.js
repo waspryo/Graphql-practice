@@ -21,10 +21,12 @@ const typeDefs = gql`
     image: String!
     onSale: Boolean!
     categoryId: String!
+    category: Category
   }
   type Category {
     id: ID!
     name: String!
+    products: [Product!]!
   }
 `;
 
@@ -37,21 +39,29 @@ const resolvers = {
       return products;
     },
     product: (parent, args, context) => {
-      const productId = args.id;
-      const product = products.find((product) => product.id === productId);
-      if (!product) return null;
-      return product;
+      // const productId = args.id;
+      const { id } = args;
+      return products.find((product) => product.id === id);
     },
     categories: () => {
       return categories;
     },
     category: (parent, args, context) => {
-      const categoryId = args.id;
-      const category = categories.find(
-        (category) => category.id === categoryId
-      );
-      if (!category) return null;
-      return category;
+      // const categoryId = args.id;
+      const { id } = args;
+      return categories.find((category) => category.id === id);
+    },
+  },
+  Category: {
+    products: (parent, args, context) => {
+      const categoryId = parent.id;
+      return products.filter((product) => product.categoryId === categoryId);
+    },
+  },
+  Product: {
+    category: (parent, args, context) => {
+      const categoryId = parent.categoryId;
+      return categories.find((category) => category.id === categoryId);
     },
   },
 };
