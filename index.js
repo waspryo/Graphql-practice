@@ -1,44 +1,13 @@
 const { ApolloServer } = require("apollo-server");
-const { db } = require("./db.js");
-const { typeDefs } = require("./schema.js");
-
-const products = db.products;
-const categories = db.categories;
+const { typeDefs } = require("./schema");
+const { Query } = require("./resolvers/Query");
+const { Category } = require("./resolvers/Category");
+const { Product } = require("./resolvers/Product");
 
 const resolvers = {
-  Query: {
-    hello: () => {
-      return "hello";
-    },
-    products: () => {
-      return products;
-    },
-    product: (parent, args, context) => {
-      // const productId = args.id;
-      const { id } = args;
-      return products.find((product) => product.id === id);
-    },
-    categories: () => {
-      return categories;
-    },
-    category: (parent, args, context) => {
-      // const categoryId = args.id;
-      const { id } = args;
-      return categories.find((category) => category.id === id);
-    },
-  },
-  Category: {
-    products: (parent, args, context) => {
-      const categoryId = parent.id;
-      return products.filter((product) => product.categoryId === categoryId);
-    },
-  },
-  Product: {
-    category: (parent, args, context) => {
-      const categoryId = parent.categoryId;
-      return categories.find((category) => category.id === categoryId);
-    },
-  },
+  Query,
+  Category,
+  Product,
 };
 
 const server = new ApolloServer({
