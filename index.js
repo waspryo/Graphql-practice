@@ -1,16 +1,23 @@
 const { ApolloServer, gql } = require("apollo-server");
+const { db } = require("./db.js");
+
+const products = db.products;
 
 const typeDefs = gql`
   type Query {
     hello: String
     products: [Product!]!
+    product(id: ID!): Product
   }
   type Product {
+    id: String!
     name: String!
     description: String!
     quantity: Int!
     price: Float!
+    image: String!
     onSale: Boolean!
+    categoryId: String!
   }
 `;
 
@@ -20,15 +27,13 @@ const resolvers = {
       return "hello";
     },
     products: () => {
-      return [
-        {
-          name: "Bike",
-          description: "Mountain Bike",
-          quantity: 3,
-          price: 3000.12,
-          onSale: true,
-        },
-      ];
+      return products;
+    },
+    product: (parent, args, context) => {
+      const productId = args.id;
+      const product = products.find((product) => product.id === productId);
+      if (!product) return null;
+      return product;
     },
   },
 };
